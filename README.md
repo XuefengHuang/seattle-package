@@ -1,2 +1,2 @@
-# seattle-packge
+# seattle-package
 OpenWRT package for Seattle
