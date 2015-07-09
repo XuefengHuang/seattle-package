@@ -28,8 +28,8 @@ sleep 1
 #     'ww': makes sure that the output is not limited by column length.
 #     
 
-NMMAIN=`ps axww 2>/dev/null | grep nmmain.py | grep -v grep`
-SOFTWAREUPDATER=`ps axww 2>/dev/null | grep softwareupdater.py | grep -v grep`
+NMMAIN=`ps ww 2>/dev/null | grep nmmain.py | grep -v grep`
+SOFTWAREUPDATER=`ps ww 2>/dev/null | grep softwareupdater.py | grep -v grep`
 
 
 if echo "$NMMAIN" | grep nmmain.py > /dev/null
