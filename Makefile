@@ -1,3 +1,10 @@
+#
+# Copyright (C) 2006-2011 OpenWrt.org
+#
+# This is free software, licensed under the GNU General Public License v2.
+# See /LICENSE for more information.
+#
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=seattle
@@ -17,12 +24,34 @@ define Package/seattle
   DEPENDS:=+python +libpthread +zlib +libffi +coreutils-nohup
 endef
 
+define Package/seattle/description
+        Seattle is a platform for networking and distributed systems research.
+        Seattle runs on end-user systems in a safe and contained manner, with 
+        support for several platforms. Users install and run Seattle with minimal 
+        impact on system security and performance. Sandboxes are established on the 
+        user's computer to limit the consumption of resources such as CPU, memory, storage 
+        space, and network bandwidth.
+endef
+
 define Build/Compile
 endef
 
 define Package/seattle/install
 	$(INSTALL_DIR) $(1)/root/seattle
-	$(CP) -r ./files/* $(1)/root/seattle
+	$(CP) -r ./files/* $(1)/root/seattle        
+endef
+
+define Package/seattle/postinst
+#!/bin/sh
+if [ -z "$${IPKG_INSTROOT}" ]; then
+	$(1)/root/seattle/install.sh --percent 50
+fi
+endef
+
+define Package/seattle/prerm
+#!/bin/sh
+$(1)/root/seattle/uninstall.sh
+rm -r $(1)/root/seattle/
 endef
 
 $(eval $(call BuildPackage,seattle))
