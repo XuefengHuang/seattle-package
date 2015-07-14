@@ -9,7 +9,7 @@ This project offers an OpenWRT package for Seattle.
 ### 1. Get OpenWRT SDK
 barrier_breaker: https://downloads.openwrt.org/barrier_breaker/14.07/ar71xx/generic/ <br />
 chaos_calmer: https://downloads.openwrt.org/chaos_calmer/15.05-rc2/ar71xx/generic/ <br />
-Then you need to extract the tar ball.
+Then you need to extract the tarball.
 
 ### 2. Download Seattle codes and Makefile
 Assuming that your SDK parent(root) directory is as below
@@ -29,9 +29,11 @@ cd ..
 make clean && make world
 </pre>
 
+If you get errors like `awk: include/scan.awk: line 21: function asort never defined`, you need to install `gawk`.
+
 ### 4. Check package
 When your build is sucessfully completed, You can find the build package (seattle_1.0-1_ar71xx.ipk) in below folder
-`OpenWrt-SDK-ar71xx-for-linux-x86_64-gcc-4.8-linaro_uClibc-0.9.33.2/bin/ar71xx/packages`
+`OpenWrt-SDK-ar71xx-for-linux-x86_64-gcc-4.8-linaro_uClibc-0.9.33.2/bin/ar71xx/packages`(barrier_breaker) or `OpenWrt-SDK-ar71xx-for-linux-x86_64-gcc-4.8-linaro_uClibc-0.9.33.2/bin/ar71xx/packages/base`(chaos_calmer)
 
 ### 5. Copy your package to Router
 Copy this ipk package (in this example seattle_1.0-1_ar71xx.ipk file) to router by any useful tool such as SCP.
@@ -45,3 +47,4 @@ opkg install seattle_1.0-1_ar71xx.ipk
 <pre>
 opkg remove seattle
 </pre>
+
