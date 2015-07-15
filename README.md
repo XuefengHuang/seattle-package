@@ -48,3 +48,36 @@ opkg install seattle_1.0-1_ar71xx.ipk
 opkg remove seattle
 </pre>
 
+# Build an OpenWRT image include Seattle
+These steps were tested using OpenWRT-"Barrier Breaker" (14.07):
+For building OpenWrt on Debian, you need to install these packages:
+<pre>
+apt-get install git subversion g++ libncurses5-dev gawk zlib1g-dev build-essential gettext unzip file
+</pre>
+Now build OpenWrt:
+<pre>
+git clone git://git.openwrt.org/14.07/openwrt.git
+cd openwrt
+
+./scripts/feeds update -a
+./scripts/feeds install -a
+
+git clone https://github.com/XuefengHuang/seattle-package.git
+mv seattle-package seattle
+cp -rf seattle/ package/
+rm -rf seattle/
+
+make defconfig
+make menuconfig
+</pre>
+
+At this point select the appropiate "Target System" and "Target Profile" depending on what target chipset/router you want to build for. Also mark the Seattle package under "Network". You also need to mark the dependencies, such as python, libpthread...
+
+Now compile/build everything:
+<pre>
+make
+</pre>
+
+The images and all *.ipk packages are now inside the bin/ folder. You can install the Seattle .ipk using "opkg install <ipkg-file>" on the router.
+
+For details please check the OpenWRT documentation.
