@@ -21,7 +21,7 @@ define Package/seattle
   CATEGORY:=Network
   TITLE:=Seattle Testbed
   URL:= https://seattle.poly.edu/html/
-  DEPENDS:=+python +libpthread +zlib +libffi +coreutils-nohup
+  DEPENDS:=+python +libpthread +zlib +libffi
 endef
 
 define Package/seattle/description
@@ -34,24 +34,32 @@ define Package/seattle/description
 endef
 
 define Build/Compile
+
 endef
 
 define Package/seattle/install
 	$(INSTALL_DIR) $(1)/root/seattle
-	$(CP) -r ./files/* $(1)/root/seattle        
+	$(CP) -r ./files/seattle/* $(1)/root/seattle
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(CP) ./files/etc/init.d/seattle $(1)/etc/init.d/seattle         
 endef
 
 define Package/seattle/postinst
 #!/bin/sh
 if [ -z "$${IPKG_INSTROOT}" ]; then
-	$(1)/root/seattle/install.sh --percent 50
+	chmod +x /etc/init.d/seattle
+	/etc/init.d/seattle enable
+	$(1)/root/seattle/install.sh --percent 40
 fi
+         
 endef
 
 define Package/seattle/prerm
 #!/bin/sh
 $(1)/root/seattle/uninstall.sh
 rm -r $(1)/root/seattle/
+rm $(1)/etc/init.d/seattle
+rm $(1)/etc/rc.d/S99seattle
 endef
 
 $(eval $(call BuildPackage,seattle))
