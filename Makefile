@@ -48,6 +48,8 @@ define Package/seattle/postinst
 #!/bin/sh
 # check if we are on real system
 if [ -z "$${IPKG_INSTROOT}" ]; then
+	PYTHONDONTWRITEBYTECODE=TRUE
+	export PYTHONDONTWRITEBYTECODE
 	sed -i 's|^BASE_INSTALLED=*|BASE_INSTALLED='"$${PKG_ROOT}"'|g' $$PKG_ROOT/etc/init.d/seattle
 
         if [ ! -e /etc/init.d/seattle ]; then
