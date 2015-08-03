@@ -51,7 +51,7 @@ if [ -z "$${IPKG_INSTROOT}" ]; then
 	sed -i 's|^BASE_INSTALLED=*|BASE_INSTALLED='"$${PKG_ROOT}"'|g' $$PKG_ROOT/etc/init.d/seattle
 
         if [ ! -e /etc/init.d/seattle ]; then
-		ln -s $$PKG_ROOT/etc/init.d/seattle /etc/init.d/
+		ln -s $$PKG_ROOT/etc/init.d/seattle /etc/init.d/seattle
 	fi
 	
 	chmod +x /etc/init.d/seattle
