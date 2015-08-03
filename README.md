@@ -42,6 +42,20 @@ Copy this ipk package (in this example seattle_1.0-1_ar71xx.ipk file) to router 
 <pre>
 opkg install seattle_1.0-1_ar71xx.ipk
 </pre>
+You also can use dest-name as the the root directory for package installation, removal, upgrading. dest-name should be a defined dest name from the configuration file.
+For instance, the only configuration file is /etc/opkg.conf. It could look like this:
+<pre>
+src/gz snapshots http://downloads.openwrt.org/snapshots/trunk/ar71xx/packages
+dest root /
+dest ram /tmp
+dest test /root
+lists_dir ext /var/opkg-lists
+option overlay_root /overlay
+</pre>
+Then you can run this command: 
+<pre>
+opkg install seattle_1.0-1_ar71xx.ipk -dest test
+</pre>
 
 ### 7. Uninstall your package
 <pre>
