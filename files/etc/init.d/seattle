@@ -2,12 +2,13 @@
 
 START=99  
 USE_PROCD=1
+BASE_INSTALLED=
 
 start_service() {
 	export PATH=$PATH:/opt/usr/bin:/opt/usr/sbin
 	export LD_LIBRARY_PATH=/opt/lib:/opt/usr/lib
 	PYTHONDONTWRITEBYTECODE=TRUE
 	export PYTHONDONTWRITEBYTECODE
-	sh /root/seattle/install.sh --percent 40
-        sh /root/seattle/start_seattle.sh 
+	sh $BASE_INSTALLED/seattle/install.sh --percent 40
+    sh $BASE_INSTALLED/seattle/start_seattle.sh
 }

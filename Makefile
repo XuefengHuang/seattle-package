@@ -38,28 +38,35 @@ define Build/Compile
 endef
 
 define Package/seattle/install
-	$(INSTALL_DIR) $(1)/root/seattle
-	$(CP) -r ./files/seattle/* $(1)/root/seattle
+	$(INSTALL_DIR) $(1)/seattle
+	$(CP) -r ./files/seattle/* $(1)/seattle
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(CP) ./files/etc/init.d/seattle $(1)/etc/init.d/seattle         
+	$(CP) ./files/etc/init.d/seattle $(1)/etc/init.d/seattle        
 endef
 
 define Package/seattle/postinst
 #!/bin/sh
+# check if we are on real system
 if [ -z "$${IPKG_INSTROOT}" ]; then
+	sed -i 's|^BASE_INSTALLED=*|BASE_INSTALLED='"$${PKG_ROOT}"'|g' $$PKG_ROOT/etc/init.d/seattle
+
+        if [ ! -e /etc/init.d/seattle ]; then
+		ln -s $$PKG_ROOT/etc/init.d/seattle /etc/init.d/
+	fi
+	
 	chmod +x /etc/init.d/seattle
 	/etc/init.d/seattle enable
-	$(1)/root/seattle/install.sh --percent 40
+	$$PKG_ROOT/seattle/install.sh --percent 40
 fi
          
 endef
 
 define Package/seattle/prerm
 #!/bin/sh
-$(1)/root/seattle/uninstall.sh
-rm -r $(1)/root/seattle/
-rm $(1)/etc/init.d/seattle
-rm $(1)/etc/rc.d/S99seattle
+$$PKG_ROOT/seattle/uninstall.sh
+rm -r $$PKG_ROOT/seattle/
+rm /etc/init.d/seattle
+rm /etc/rc.d/S99seattle
 endef
 
 $(eval $(call BuildPackage,seattle))
