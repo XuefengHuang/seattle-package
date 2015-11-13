@@ -3,6 +3,7 @@ resource cpu .002
 resource memory 1000000   # 1 MiB
 resource diskused 100000 # .1 MiB
 resource events 2
+resource procfsread 1000
 resource filewrite 1000
 resource fileread 1000 
 resource filesopened 1 
