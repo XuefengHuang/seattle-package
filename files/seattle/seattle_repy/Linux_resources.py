@@ -552,6 +552,7 @@ def measure_resources():
 
   resource_dict["filewrite"] = filewrite
   resource_dict["fileread"] = fileread
+  resource_dict["procfsread"] = fileread/5
   
   # These resources are not measure in this script so a None
   # value is used to indicate it was not measured. 
