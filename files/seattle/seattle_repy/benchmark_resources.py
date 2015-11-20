@@ -57,6 +57,7 @@ DEFAULT_MAX_RESOURCE_DICT = {"cpu":1,
                              "memory":510000000, # allmost 512MB
                              "diskused":3700000000, # 3.44589 GB
                              "events":500, # see module's doc string.
+                             "procfsread":250,
                              "filesopened":250,
                              "insockets":250,
                              "outsockets":250,
@@ -74,6 +75,7 @@ DEFAULT_OFFCUT_DICT =  {'cpu':.002,
                         'memory': 1000000,   # 1 MiB
                         'diskused': 100000, # .1 MiB
                         'events':2,
+                        "procfsread":1000,
                         'filewrite':1000,
                         'fileread':1000,
                         'filesopened':1, 
