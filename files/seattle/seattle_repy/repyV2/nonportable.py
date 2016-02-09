@@ -316,7 +316,9 @@ def get_resources():
       usage["memory"] = os_api.get_process_rss()
 
       # Get the thread specific CPU usage
-      usage["threadcpu"] = os_api.get_current_thread_cpu_time() 
+      # Since this issue (https://github.com/SeattleTestbed/repy_v2/issues/98#), 
+      # we decide to patch out thread accounting.
+      usage["threadcpu"] = os_api.get_process_cpu_time(pid) 
 
 
     # Windows Specific versions
