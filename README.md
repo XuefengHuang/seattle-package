@@ -94,4 +94,8 @@ make
 
 The images and all *.ipk packages are now inside the bin/ folder. You can install the Seattle .ipk using "opkg install <ipkg-file>" on the router.
 
+Another method to create image builder is using this command:
+<pre>
+sudo make image PROFILE=TLWDR4300 PACKAGES =”zlib libffi libpthread python-codecs block-mount python-ctypes python-openssl python-compiler libopenssl”
+</pre>
 For details please check the OpenWRT documentation.
