@@ -627,6 +627,10 @@ USERCONTEXT_WRAPPER_INFO = {
       {'func' : openwrt_api.scan,
        'args' : [Str()],
        'return' : List()},
+  'wifi_status' :
+      {'func' : openwrt_api.wifi_status,
+       'args' : [Str()],
+       'return' : List()},
   'gethostbyname' :
       {'func' : emulcomm.gethostbyname,
        'args' : [Str()],
