@@ -293,6 +293,76 @@ def scan(interface):
   
   return result
 
+def wifi_status(interface):
+  """
+  <Purpose>
+    Collect a list of WiFi channel information.
+
+  <Arguments>
+    interface: the name of the interface to gather network information.
+
+  <Exceptions>
+    FileNotFoundError is raised if iw tool does not exist.
+
+  <Side Effects>
+    None
+
+  <Returns>
+    A list of WiFi channel information such as[{'active_time': '64 ms', 
+    'noise': '-91 dBm', 'receive_time': '12 ms', 'frequency': '2412 MHz', 
+    'busy_time': '19 ms', 'transmit_time': '0 ms'}, {'active_time': 
+    '97513999 ms', 'noise': '-90 dBm', 'receive_time': '26992612 ms', 
+    'frequency': '2417 MHz', 'busy_time': '30974102 ms', 'transmit_time': 
+    '1487900 ms'}] 
+
+  """
+  if type(interface) is not str:
+    raise RepyArgumentError("wifi_status() takes a string as argument.")
+
+  # Check the input arguments (sanity)
+  if interface not in get_network_interface():
+    raise RepyArgumentError("interface "+ interface + " is not available.")
+  try:
+    iw_process = portable_popen.Popen(['iw', 'dev', interface, 'survey', 'dump'])
+  except:
+    raise FileNotFoundError('iw: command not found')
+    
+  iw_output, _ = iw_process.communicate()
+  iw_lines = textops.textops_rawtexttolines(iw_output)
+
+  frequency = textops.textops_grep("frequency", iw_lines)
+  frequency = textops.textops_cut(frequency, delimiter=":", fields=[1])
+
+  noise = textops.textops_grep("noise", iw_lines)
+  noise = textops.textops_cut(noise, delimiter=":", fields=[1])         
+
+  active_time = textops.textops_grep("channel active time", iw_lines)
+  active_time = textops.textops_cut(active_time, delimiter=":", fields=[1])
+
+  busy_time = textops.textops_grep("channel busy time", iw_lines)
+  busy_time = textops.textops_cut(busy_time, delimiter=":", fields=[1])
+
+  receive_time = textops.textops_grep("channel receive time", iw_lines)
+  receive_time = textops.textops_cut(receive_time, delimiter=":", fields=[1])
+
+  transmit_time = textops.textops_grep("channel transmit time", iw_lines)
+  transmit_time = textops.textops_cut(transmit_time, delimiter=":", fields=[1])                 
+
+  result = []
+
+  for fre, no, active, busy, receive, transmit in zip(frequency, noise, active_time, busy_time, receive_time, transmit_time):
+    rules = {
+      "frequency": fre.strip(),
+      "noise": no.strip(),
+      "active_time": active.strip(),
+      "busy_time": busy.strip(),
+      "receive_time": receive.strip(),
+      "transmit_time": transmit.strip(),
+    }
+    result.append(rules)
+  
+  return result
+
 ##### Private functions ##### 
 def _get_interface_traffic_statistics(interface):
   """

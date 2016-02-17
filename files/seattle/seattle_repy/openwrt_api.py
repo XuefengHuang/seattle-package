@@ -169,9 +169,9 @@ def get_station(interface):
    <Returns>
      station statistic informatio as a dict such as [{'signal': '-77 [-78, -83] dBm', 
     'station': '54:4e:90:06:f3:6f', 'tx bitrate': '57.8 MBit/s MCS 5 short GI', 'rx 
-    bitrate': '1.0 MBit/s', 'signal_avg': '-88 [-90, -92] dBm'}, {'signal': '-40 [-42, 
+    bitrate': '1.0 MBit/s', 'signal_avg': '-88 [-90, -92] dBm','ip': '192.168.1.109'}, {'signal': '-40 [-42, 
     -44] dBm', 'station': 'ac:81:12:53:8e:0f', 'tx bitrate': '65.0 MBit/s MCS 6 short 
-    GI', 'rx bitrate': '18.0 MBit/s', 'signal_avg': '-42 [-44, -48] dBm'}]
+    GI', 'rx bitrate': '18.0 MBit/s', 'signal_avg': '-42 [-44, -48] dBm', 'ip':'192.168.1.143'}]
 
   """
   if type(interface) is not str:
@@ -227,7 +227,8 @@ def get_station(interface):
       "tx bytes": tx_bytes[i].strip(),
       "rx bytes": rx_bytes[i].strip(),
       "tx retries": tx_retries[i].strip(),
-      "tx failed": tx_failed[i].strip(),            
+      "tx failed": tx_failed[i].strip(),
+      "ip": _get_client_ip()[station[i].strip()],            
     }
     result.append(rules)
   
@@ -292,6 +293,76 @@ def scan(interface):
   
   return result
 
+def wifi_status(interface):
+  """
+  <Purpose>
+    Collect a list of WiFi channel information.
+
+  <Arguments>
+    interface: the name of the interface to gather network information.
+
+  <Exceptions>
+    FileNotFoundError is raised if iw tool does not exist.
+
+  <Side Effects>
+    None
+
+  <Returns>
+    A list of WiFi channel information such as[{'active_time': '64 ms', 
+    'noise': '-91 dBm', 'receive_time': '12 ms', 'frequency': '2412 MHz', 
+    'busy_time': '19 ms', 'transmit_time': '0 ms'}, {'active_time': 
+    '97513999 ms', 'noise': '-90 dBm', 'receive_time': '26992612 ms', 
+    'frequency': '2417 MHz', 'busy_time': '30974102 ms', 'transmit_time': 
+    '1487900 ms'}] 
+
+  """
+  if type(interface) is not str:
+    raise RepyArgumentError("wifi_status() takes a string as argument.")
+
+  # Check the input arguments (sanity)
+  if interface not in get_network_interface():
+    raise RepyArgumentError("interface "+ interface + " is not available.")
+  try:
+    iw_process = portable_popen.Popen(['iw', 'dev', interface, 'survey', 'dump'])
+  except:
+    raise FileNotFoundError('iw: command not found')
+    
+  iw_output, _ = iw_process.communicate()
+  iw_lines = textops.textops_rawtexttolines(iw_output)
+
+  frequency = textops.textops_grep("frequency", iw_lines)
+  frequency = textops.textops_cut(frequency, delimiter=":", fields=[1])
+
+  noise = textops.textops_grep("noise", iw_lines)
+  noise = textops.textops_cut(noise, delimiter=":", fields=[1])         
+
+  active_time = textops.textops_grep("channel active time", iw_lines)
+  active_time = textops.textops_cut(active_time, delimiter=":", fields=[1])
+
+  busy_time = textops.textops_grep("channel busy time", iw_lines)
+  busy_time = textops.textops_cut(busy_time, delimiter=":", fields=[1])
+
+  receive_time = textops.textops_grep("channel receive time", iw_lines)
+  receive_time = textops.textops_cut(receive_time, delimiter=":", fields=[1])
+
+  transmit_time = textops.textops_grep("channel transmit time", iw_lines)
+  transmit_time = textops.textops_cut(transmit_time, delimiter=":", fields=[1])                 
+
+  result = []
+
+  for fre, no, active, busy, receive, transmit in zip(frequency, noise, active_time, busy_time, receive_time, transmit_time):
+    rules = {
+      "frequency": fre.strip(),
+      "noise": no.strip(),
+      "active_time": active.strip(),
+      "busy_time": busy.strip(),
+      "receive_time": receive.strip(),
+      "transmit_time": transmit.strip(),
+    }
+    result.append(rules)
+  
+  return result
+
 ##### Private functions ##### 
 def _get_interface_traffic_statistics(interface):
   """
@@ -328,3 +399,32 @@ def _get_interface_traffic_statistics(interface):
         'rx_error': rx_error, 'tx_error': tx_error, 'rx_drop': rx_drop, 'tx_drop': tx_drop}
   else:
     raise FileNotFoundError("Could not find /proc/net/dev!")
+
+def _get_client_ip():
+  """
+  <Purpose>
+    Return connected clients information. The information returned is 
+    looked up in the /tmp/dhcp.leases.
+
+  <Arguments>
+    None.
+
+  <Exceptions>
+    FileNotFoundError is raised if the file does not exist
+
+  <Returns>
+    Connected client as a dict such as {'ac:81:12:53:8e:0f' : '192.168.1.143'}
+  """
+
+  result = {}
+  if os.path.exists('/tmp/dhcp.leases'):
+    dev = safe_open('/tmp/dhcp.leases', 'r')
+    for line in dev:
+        data = line.split()
+        if data:
+          mac = data[1]
+          ip = data[2]
+          result[mac] = ip
+    return result
+  else:
+    raise FileNotFoundError("Could not find /tmp/dhcp.leases!")
