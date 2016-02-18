@@ -334,7 +334,8 @@ def wifi_status(interface):
   iw_lines = textops.textops_rawtexttolines(output)
 
   frequency = textops.textops_grep("frequency", iw_lines)
-  frequency = textops.textops_cut(frequency, delimiter=":", fields=[1])        
+  frequency = textops.textops_cut(frequency, delimiter=":", fields=[1])
+          
   active_time = textops.textops_grep("channel active time", iw_lines)
   active_time = textops.textops_cut(active_time, delimiter=":", fields=[1])
 
