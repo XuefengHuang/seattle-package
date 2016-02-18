@@ -308,13 +308,11 @@ def wifi_status(interface):
     None
 
   <Returns>
-    A list of WiFi channel information such as[{'active_time': '64 ms', 
-    'noise': '-91 dBm', 'receive_time': '12 ms', 'frequency': '2412 MHz', 
-    'busy_time': '19 ms', 'transmit_time': '0 ms'}, {'active_time': 
-    '97513999 ms', 'noise': '-90 dBm', 'receive_time': '26992612 ms', 
-    'frequency': '2417 MHz', 'busy_time': '30974102 ms', 'transmit_time': 
-    '1487900 ms'}] 
-
+    A list of WiFi channel information such as [{'transmit_time': '0 ms', 
+    'frequency': '2412 MHz', 'busy_time': '16 ms', 'receive_time': '11 ms', 
+    'active_time': '24 ms'}, {'transmit_time': '1070113 ms', 'frequency': 
+    '2462 MHz [in use]', 'busy_time': '22421480 ms', 'receive_time': 
+    '20057267 ms', 'active_time': '74024524 ms'}]
   """
   if type(interface) is not str:
     raise RepyArgumentError("wifi_status() takes a string as argument.")
@@ -328,14 +326,15 @@ def wifi_status(interface):
     raise FileNotFoundError('iw: command not found')
     
   iw_output, _ = iw_process.communicate()
-  iw_lines = textops.textops_rawtexttolines(iw_output)
+  iw_output = iw_output.split('Survey data from ' + interface)
+  output = ""
+  for line in iw_output:
+    if "channel busy time" in line:
+      output += line
+  iw_lines = textops.textops_rawtexttolines(output)
 
   frequency = textops.textops_grep("frequency", iw_lines)
-  frequency = textops.textops_cut(frequency, delimiter=":", fields=[1])
-
-  noise = textops.textops_grep("noise", iw_lines)
-  noise = textops.textops_cut(noise, delimiter=":", fields=[1])         
-
+  frequency = textops.textops_cut(frequency, delimiter=":", fields=[1])        
   active_time = textops.textops_grep("channel active time", iw_lines)
   active_time = textops.textops_cut(active_time, delimiter=":", fields=[1])
 
@@ -350,10 +349,9 @@ def wifi_status(interface):
 
   result = []
 
-  for fre, no, active, busy, receive, transmit in zip(frequency, noise, active_time, busy_time, receive_time, transmit_time):
+  for fre, active, busy, receive, transmit in zip(frequency, active_time, busy_time, receive_time, transmit_time):
     rules = {
       "frequency": fre.strip(),
-      "noise": no.strip(),
       "active_time": active.strip(),
       "busy_time": busy.strip(),
       "receive_time": receive.strip(),
