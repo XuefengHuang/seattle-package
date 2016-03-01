@@ -268,7 +268,7 @@ def scan(interface):
   iw_output, _ = iw_process.communicate()
   iw_lines = textops.textops_rawtexttolines(iw_output)
 
-  BSSID = textops.textops_grep("BSS", iw_lines)
+  BSSID = textops.textops_grep("(on "+ interface +")", iw_lines)
   BSSID = textops.textops_cut(BSSID, delimiter=" ", fields=[1])
 
   signal = textops.textops_grep("signal:", iw_lines)
@@ -277,14 +277,14 @@ def scan(interface):
   SSID = textops.textops_grep("SSID", iw_lines)
   SSID = textops.textops_cut(SSID, delimiter=":", fields=[1])
 
-  channel = textops.textops_grep("primary channel", iw_lines)
-  channel = textops.textops_cut(channel, delimiter=":", fields=[1])                 
+  channel = textops.textops_grep("DS Parameter set: channel", iw_lines)
+  channel = textops.textops_cut(channel, delimiter=" ", fields=[4])                 
 
   result = []
 
   for bbs, sig, ssid, chan in zip(BSSID, signal, SSID, channel):
     rules = {
-      "BSSID": bbs.strip(),
+      "BSSID": bbs.strip()[0:17],
       "Signal": sig.strip(),
       "SSID": ssid.strip(),
       "channel": chan.strip(),
