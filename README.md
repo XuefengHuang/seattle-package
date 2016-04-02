@@ -1,11 +1,16 @@
 # Seattle-OpenWRT
-
 [Seattle](https://seattle.poly.edu/html/) is an
 open research and educational testbed that utilizes computational
 resources provided by end users on their existing devices.
 This project offers an OpenWRT package for Seattle.
 
-# How to create an OpenWRT package for Seattle
+# Table of contents
+- [How to create an OpenWRT package for Seattle](#id-section1)
+- [Build an OpenWRT image include Seattle](#id-section2)
+
+
+
+## How to create an OpenWRT package for Seattle <a name="id-section1"></a>
 ### 1. Get OpenWRT SDK
 barrier_breaker: https://downloads.openwrt.org/barrier_breaker/14.07/ar71xx/generic/ <br />
 chaos_calmer: https://downloads.openwrt.org/chaos_calmer/15.05-rc2/ar71xx/generic/ <br />
@@ -62,7 +67,7 @@ opkg install seattle_1.0-1_ar71xx.ipk -dest test
 opkg remove seattle
 </pre>
 
-# Build an OpenWRT image include Seattle
+## Build an OpenWRT image include Seattle <a name="id-section2"></a>
 These steps were tested using OpenWRT-"Barrier Breaker" (14.07):
 For building OpenWrt on Debian, you need to install these packages:
 <pre>
